@@ -96,6 +96,7 @@ public class PleaServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletResponse resp, HttpServletRequest req) throws IOException {
         resp.setContentType("text/html");
+        String name = req.getParameter("name")
         resp.getWriter().write(
             "<html><body>" +
             "<h1>POST Anfrage erhalten</h1>" +
@@ -103,7 +104,7 @@ public class PleaServlet extends HttpServlet {
             "Name: <input type='text' name='name'/>" +
             "<input type='submit' value='Senden'/>" +
             "</form>" +
-            "<p>Hallo, " + req.getParameter("name") + "!</p>" +
+            "<p>Hallo, " + name + "!</p>" +
             "<a href='lib'>Zurück</a>" +
             "</body></html>"
         );
