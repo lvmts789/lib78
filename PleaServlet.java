@@ -95,7 +95,7 @@ public class PleaServlet extends HttpServlet {
     // überladene doPost mit (resp, name) → ursprünglicher POST-Flow
     private void doPost(HttpServletResponse resp, String name) throws IOException {
         resp.setContentType("text/html");
-        write(resp,
+        resp.getWriter().write(
             "<html><body>" +
             "<h1>POST Anfrage erhalten</h1>" +
             "<form method='post' action='lib'>" +
