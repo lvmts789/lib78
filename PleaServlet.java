@@ -93,7 +93,8 @@ public class PleaServlet extends HttpServlet {
     }
 
     // überladene doPost mit (resp, name) → ursprünglicher POST-Flow
-    private void doPost(HttpServletResponse resp, String name) throws IOException {
+    @Override
+    protected void doPost(HttpServletResponse resp, HttpServletRequest req) throws IOException {
         resp.setContentType("text/html");
         resp.getWriter().write(
             "<html><body>" +
@@ -102,7 +103,7 @@ public class PleaServlet extends HttpServlet {
             "Name: <input type='text' name='name'/>" +
             "<input type='submit' value='Senden'/>" +
             "</form>" +
-            "<p>Hallo, " + name + "!</p>" +
+            "<p>Hallo, " + req.getParameter("name") + "!</p>" +
             "<a href='lib'>Zurück</a>" +
             "</body></html>"
         );
