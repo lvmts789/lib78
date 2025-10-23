@@ -1,109 +1,52 @@
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
-
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebServlet("/favbook")
-public class FavouriteBookServlet extends HttpServlet {
+@WebServlet("/lib")
+public class PleaServlet extends HttpServlet {
 
-    // --- Deutsch: GET ruft direkt part1 auf (Willkommens-/Formular-Seite) ---
+    // --- Deutsch: Diese Methode schreibt einfach die komplette Seite raus ---
+    private void write(HttpServletResponse resp, String name) throws IOException {
+        resp.getWriter().write(
+            "<!doctype html>" +
+            "<html><head><meta charset='utf-8'/>" +
+            "<title>Lib</title>" +
+            "<style>body{font-family:Arial;margin:2rem} .box{border:1px solid #ddd;padding:.5rem 1rem;border-radius:6px;display:inline-block}</style>" +
+            "</head><body>" +
+            "<h1>Einfaches Formular</h1>" +
+            // Deutsch: ganz normales Formular, postet wieder auf /lib
+            "<form method='post' action='lib'>" +
+            "Name: <input type='text' name='name'/> " +
+            "<button type='submit'>Senden</button>" +
+            "</form>" +
+            "<hr/>" +
+            // Deutsch: wir benutzen den Namen direkt (ohne Prüfungen)
+            "<p class='box'>Hallo, " + name + "!</p>" +
+            "<p>Oben kannst du den Namen ändern und mit POST schicken.</p>" +
+            "<p><a href='lib'>Zurück (GET)</a></p>" +
+            "</body></html>"
+        );
+    }
+
+    // --- Deutsch: Nur eine doGet. Liest name aus req und gibt ihn an write weiter. ---
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        // Deutsch: Lieblingsbuch direkt holen (ohne Prüfungen)
-        String favoriteBook = req.getParameter("favoriteBook");
+        // Deutsch: name direkt aus der Anfrage holen (ohne Checks)
+        String name = req.getParameter("name");
+
+        // Deutsch: HTML ausgeben
         resp.setContentType("text/html");
-        part1(resp, favoriteBook);
+        write(resp, name);  // Deutsch: hier wird alles geschrieben
     }
 
-    // --- Deutsch: POST ruft direkt part2 auf (Ergebnis + MySQL-Infos) ---
+    // --- Deutsch: Nur eine doPost. Gleiches Prinzip: name holen -> write aufrufen. ---
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        String favoriteBook = req.getParameter("favoriteBook");
+        // Deutsch: wieder direkt lesen, ohne Validierung
+        String name = req.getParameter("name");
+
+        // Deutsch: HTML ausgeben
         resp.setContentType("text/html");
-        part2(resp, favoriteBook);
-    }
-
-    // --- Deutsch: part1 schreibt die einfache Willkommens-/Eingabe-Seite ---
-    private void part1(HttpServletResponse resp, String favoriteBook) throws IOException {
-        resp.getWriter().write(
-            "<!doctype html>" +
-            "<html><head><meta charset='utf-8'/>" +
-            "<title>Lieblingsbuch-Tracker</title>" +
-            "<style>body{font-family:Arial;margin:2rem} .box{border:1px solid #ccc;padding:.5rem 1rem;border-radius:6px;margin:.25rem 0;display:inline-block}</style>" +
-            "</head><body>" +
-            "<h1>Willkommen im Lieblingsbuch-Tracker</h1>" +
-            "<p>Gib dein Lieblingsbuch ein und sende das Formular.</p>" +
-
-            // Deutsch: Einfaches Formular (postet auf /favbook)
-            "<form method='post' action='favbook'>" +
-            "Lieblingsbuch: <input type='text' name='favoriteBook'/> " +
-            "<button type='submit'>Senden</button>" +
-            "</form>" +
-
-            "<hr/>" +
-            "<div class='box'><strong>Aktuell eingetragen (GET):</strong> " + favoriteBook + "</div>" +
-
-            "<p style='margin-top:1rem'><a href='favbook'>Zurück (GET)</a></p>" +
-            "</body></html>"
-        );
-    }
-
-    // --- Deutsch: part2 schreibt die Ergebnis-Seite und liest Zusatzinfos aus MySQL (JDBC) ---
-    private void part2(HttpServletResponse resp, String favoriteBook) throws IOException {
-        // Deutsch: Mini-Infos aus der DB (studentisch, ohne Prüfungen)
-        String totalReaders = "";
-        String topBook = "";
-
-        // Deutsch: Demo-Zugangsdaten (bei euch anpassen)
-        String url  = "jdbc:mysql://localhost:3306/library";
-        String user = "root";
-        String pass = "password";
-
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection conn = DriverManager.getConnection(url, user, pass);
-            Statement st = conn.createStatement();
-
-            ResultSet rs1 = st.executeQuery("SELECT COUNT(*) FROM readers");
-            if (rs1.next()) totalReaders = rs1.getString(1);
-
-            ResultSet rs2 = st.executeQuery("SELECT title FROM books ORDER BY popularity DESC LIMIT 1");
-            if (rs2.next()) topBook = rs2.getString(1);
-
-            rs1.close();
-            rs2.close();
-            st.close();
-            conn.close();
-        } catch (Exception e) {
-            totalReaders = "Fehler";
-            topBook = "Fehler: " + e.getMessage();
-        }
-
-        resp.getWriter().write(
-            "<!doctype html>" +
-            "<html><head><meta charset='utf-8'/>" +
-            "<title>Lieblingsbuch-Tracker</title>" +
-            "<style>body{font-family:Arial;margin:2rem} .box{border:1px solid #ccc;padding:.5rem 1rem;border-radius:6px;margin:.25rem 0;display:inline-block}</style>" +
-            "</head><body>" +
-            "<h1>Dein Lieblingsbuch (POST)</h1>" +
-            "<div class='box'><strong>Lieblingsbuch:</strong> " + favoriteBook + "</div>" +
-
-            "<hr/>" +
-            "<h2>Bibliotheks-Infos (aus MySQL)</h2>" +
-            "<div class='box'><strong>Gesamtzahl Leser:</strong> " + totalReaders + "</div>" +
-            "<div class='box'><strong>Beliebtestes Buch:</strong> " + topBook + "</div>" +
-
-            "<p style='margin-top:1rem'><a href='favbook'>Zurück (GET)</a></p>" +
-            "</body></html>"
-        );
+        write(resp, name);  // Deutsch: gleiche Seite, zeigt nur an, was kam
     }
 }
