@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @WebServlet("/lib")
-public class LibServlet extends HttpServlet {
+public class PleaServlet extends HttpServlet {
 
     // --- Deutsch: Diese Methode schreibt einfach die komplette Seite raus ---
     private void write(HttpServletResponse resp, String name) throws IOException {
