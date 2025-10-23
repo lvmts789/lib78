@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @WebServlet("/favbook")
-public class FavouriteBookServlet extends HttpServlet {
+public class Wrtio extends HttpServlet {
 
     // --- Deutsch: GET ruft direkt part1 auf (Willkommens-/Formular-Seite) ---
     @Override
