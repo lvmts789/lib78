@@ -8,91 +8,50 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/lib")
 public class LibServlet extends HttpServlet {
 
-    // --- kleine Schreibhilfe, damit der Code kurz bleibt ---
-    private void write(HttpServletResponse resp, String s) throws IOException {
-        resp.getWriter().write(s);
+    // --- Deutsch: Diese Methode schreibt einfach die komplette Seite raus ---
+    private void write(HttpServletResponse resp, String name) throws IOException {
+        resp.getWriter().write(
+            "<!doctype html>" +
+            "<html><head><meta charset='utf-8'/>" +
+            "<title>Lib</title>" +
+            "<style>body{font-family:Arial;margin:2rem} .box{border:1px solid #ddd;padding:.5rem 1rem;border-radius:6px;display:inline-block}</style>" +
+            "</head><body>" +
+            "<h1>Einfaches Formular</h1>" +
+            // Deutsch: ganz normales Formular, postet wieder auf /lib
+            "<form method='post' action='lib'>" +
+            "Name: <input type='text' name='name'/> " +
+            "<button type='submit'>Senden</button>" +
+            "</form>" +
+            "<hr/>" +
+            // Deutsch: wir benutzen den Namen direkt (ohne Prüfungen)
+            "<p class='box'>Hallo, " + name + "!</p>" +
+            "<p>Oben kannst du den Namen ändern und mit POST schicken.</p>" +
+            "<p><a href='lib'>Zurück (GET)</a></p>" +
+            "</body></html>"
+        );
     }
 
-    // --- GET: holt "name" und ruft mehrere Mini-Bausteine auf ---
+    // --- Deutsch: Nur eine doGet. Liest name aus req und gibt ihn an write weiter. ---
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        // Deutsch: Wir lesen den Namen direkt aus der Anfrage (ohne Prüfungen)
+        // Deutsch: name direkt aus der Anfrage holen (ohne Checks)
         String name = req.getParameter("name");
 
+        // Deutsch: HTML ausgeben
         resp.setContentType("text/html");
-
-        // Deutsch: Seite zusammenklicken aus kleinen Methoden
-        write(resp, header("GET Anfrage erhalten"));
-        write(resp, form());                 // Formular oben
-        write(resp, greet(name));            // einfache Begrüßung
-        write(resp, greetLoud(name));        // gleiche Begrüßung, nur lauter
-        write(resp, badge(name));            // „Student“-Badge mit Name
-        write(resp, footer());
+        write(resp, name);  // Deutsch: hier wird alles geschrieben
     }
 
-    // --- POST: holt "name" und nutzt andere Bausteine ---
+    // --- Deutsch: Nur eine doPost. Gleiches Prinzip: name holen -> write aufrufen. ---
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        // Deutsch: Wieder direkt aus der Anfrage
+        // Deutsch: wieder direkt lesen, ohne Validierung
         String name = req.getParameter("name");
 
+        // Deutsch: HTML ausgeben
         resp.setContentType("text/html");
-
-        // Deutsch: Für POST zeigen wir eine kleine „Bestätigungsseite“
-        write(resp, header("POST Anfrage erhalten"));
-        write(resp, form());                 // Formular bleibt gleich
-        write(resp, thanks(name));           // „Danke“-Text
-        write(resp, miniSummary(name));      // Mini-Zusammenfassung
-        write(resp, footer());
-    }
-
-    // -------------------- Hilfsmethoden (nur HTML-Fragmente) --------------------
-
-    // Deutsch: Überschrift + kleines CSS (simpel)
-    private String header(String title) {
-        return "<!doctype html><html><head><meta charset='utf-8'/>"
-             + "<title>Lib</title>"
-             + "<style>body{font-family:Arial;margin:2rem;} .box{padding:.5rem 1rem;border:1px solid #ddd;border-radius:6px;display:inline-block;margin:.25rem 0;}</style>"
-             + "</head><body><h1>" + title + "</h1>";
-    }
-
-    // Deutsch: Seitenende
-    private String footer() {
-        return "<p><a href='lib'>Zurück</a></p></body></html>";
-    }
-
-    // Deutsch: Einfache Begrüßung
-    private String greet(String name) {
-        return "<p class='box'>Hallo, " + name + "!</p>";
-    }
-
-    // Deutsch: „laute“ Begrüßung (nur demonstrativ)
-    private String greetLoud(String name) {
-        return "<p class='box'><strong>HALLO, " + ((name == null) ? null : name.toUpperCase()) + "!</strong></p>";
-    }
-
-    // Deutsch: Kleines „Badge“ mit dem Namen
-    private String badge(String name) {
-        return "<p class='box'>🎓 Student: <em>" + name + "</em></p>";
-    }
-
-    // Deutsch: Formular (GET/POST egal; wir posten zurück auf /lib)
-    private String form() {
-        return "<form method='post' action='lib'>"
-             + "Name: <input type='text' name='name'/> "
-             + "<button type='submit'>Senden</button>"
-             + "</form>";
-    }
-
-    // Deutsch: Danke-Text nach POST
-    private String thanks(String name) {
-        return "<p class='box'>Danke für die Eingabe, " + name + ".</p>";
-    }
-
-    // Deutsch: Mini-Zusammenfassung
-    private String miniSummary(String name) {
-        return "<p class='box'>Zusammenfassung: name = <code>" + name + "</code></p>";
+        write(resp, name);  // Deutsch: gleiche Seite, zeigt nur an, was kam
     }
 }
